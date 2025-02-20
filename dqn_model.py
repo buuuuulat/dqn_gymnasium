@@ -6,10 +6,13 @@ class DQN(nn.Module):
         super().__init__()
         self.fc = nn.Sequential(
             nn.Linear(obs_shape, 32),
+            nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.Linear(32, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
             nn.Linear(64, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
             nn.Linear(64, act_shape)
         )

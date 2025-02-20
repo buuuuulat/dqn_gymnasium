@@ -1,13 +1,13 @@
-from functools import total_ordering
-
 import gymnasium as gym
 import torch
+import torch.nn as nn
 import numpy as np
 import collections
 
-from fontTools.misc.plistlib import totree
 
 DEViCE = torch.device('mps' if torch.mps.is_available() else 'cpu')
+GAMMA = 0.99
+
 
 Experience = collections.namedtuple('Experience',
                                     field_names=['state', 'action', 'reward', 'terminated', 'truncated', 'new_state'])
@@ -25,14 +25,14 @@ class ExperienceBuffer:
 
     def sample(self, batch_size=32):
         indices =  np.random.choice(len(self.buffer), batch_size)
-        states, actions, rewards, terminated, truncated, new_state = zip(*[self.buffer[idx] for idx in indices])
+        states, actions, rewards, terminated, truncated, new_states = zip(*[self.buffer[idx] for idx in indices])
         return (
             np.array(states),
             np.array(actions),
             np.array(rewards),
             np.array(terminated),
             np.array(truncated),
-            np.array(new_state)
+            np.array(new_states)
         )
 
 
@@ -78,4 +78,23 @@ class Agent:
         return done_reward
 
     def calc_loss(self, batch, net, tgt_net, device=DEViCE):
-        pass
+        states, actions, rewards, terminated, truncated, new_states = batch
+
+        states_t = torch.as_tensor(states).to(device=DEViCE)
+        next_states_t = torch.as_tensor(states).to(device=DEViCE)
+        actions_t = torch.as_tensor(states).to(device=DEViCE)
+        rewards_t = torch.as_tensor(states).to(device=DEViCE)
+        done_finished = torch.BoolTensor(states).to(device=DEViCE)
+
+        state_action_values = net(states_t).gather(1, actions_t.unsqueeze(-1)).squeeze(-1)
+
+        with torch.no_grad():
+            next_state_values = tgt_net(next_states_t).max(1)[0]
+            next_state_values[done_finished] = 0.0
+
+        expected_state_action_values = rewards_t + GAMMA * next_state_values
+        return nn.MSELoss()(state_action_values, expected_state_action_values)
+
+
+if __name__ == '__main__':
+    pass
