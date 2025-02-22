@@ -11,15 +11,15 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 DEVICE = torch.device('mps' if torch.mps.is_available() else 'cpu')
-ENV_NAME = 'Acrobot-v1'
+ENV_NAME = 'CartPole-v1'
 
 GAMMA = 0.99
 BATCH_SIZE = 64
-REPLAY_SIZE = 5000
-REPLAY_START_SIZE = 5000
+REPLAY_SIZE = 10000
+REPLAY_START_SIZE = 10000
 LEARNING_RATE = 3e-4
-SYNC_TARGET_FRAMES = 2000
-REWARD_BOUND = 0
+SYNC_TARGET_FRAMES = 1000
+REWARD_BOUND = 500
 
 EPSILON_DECAY_LAST_FRAME = 50000
 EPSILON_START = 1
