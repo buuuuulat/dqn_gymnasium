@@ -51,8 +51,10 @@ Visualizes the trained agent interacting with the environment using human render
 - Average reward (last 100 episodes): -79
 - Target reward threshold: -100
 - Training graphs included:
-  1. Reward progression
-  2. Epsilon decay schedule
+  1. Reward
+  ![reward.svg](files/reward.svg)
+  2. Mean reward over last 100 episodes
+  ![reward_100.svg](files/reward_100.svg)
 
 ## Notes
 1. **MPS/CUDA Compatibility**:
