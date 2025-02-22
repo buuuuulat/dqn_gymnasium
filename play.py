@@ -5,14 +5,14 @@ import numpy as np
 
 import dqn_model
 
-ENV_NAME = 'CartPole-v1'
+ENV_NAME = 'LunarLander-v3'
 
 if __name__ == '__main__':
     while True:
         env = gym.make(ENV_NAME, render_mode='human')
 
         net = dqn_model.DQN(env.observation_space.shape, env.action_space.n)
-        net.load_state_dict(torch.load('./model_saves/CartPole-v1best_496.dat'))
+        net.load_state_dict(torch.load('./model_saves/LunarLander-v3best_200.dat'))
         net.eval()
 
         state, info = env.reset()

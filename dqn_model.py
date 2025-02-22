@@ -7,9 +7,11 @@ class DQN(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(obs_shape[0], 64),
             nn.ReLU(),
-            nn.Linear(64, 128),
+            nn.Linear(64, 256),
             nn.ReLU(),
-            nn.Linear(128, 64),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+            nn.Linear(256, 64),
             nn.ReLU(),
             nn.Linear(64, act_shape)
         )
