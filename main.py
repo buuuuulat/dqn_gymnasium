@@ -14,11 +14,11 @@ DEVICE = torch.device('mps' if torch.mps.is_available() else 'cpu')
 ENV_NAME = 'Acrobot-v1'
 
 GAMMA = 0.99
-BATCH_SIZE = 32
-REPLAY_SIZE = 10000
-REPLAY_START_SIZE = 10000
-LEARNING_RATE = 1e-4
-SYNC_TARGET_FRAMES = 1000
+BATCH_SIZE = 64
+REPLAY_SIZE = 5000
+REPLAY_START_SIZE = 5000
+LEARNING_RATE = 3e-4
+SYNC_TARGET_FRAMES = 2000
 REWARD_BOUND = 0
 
 EPSILON_DECAY_LAST_FRAME = 50000
@@ -72,8 +72,8 @@ class Agent:
         if np.random.random() < epsilon:
             action = self.env.action_space.sample()
         else:
-            states_t = torch.as_tensor([self.state]).to(device)
-            q_vals_t = net(states_t.shape)
+            states_t = torch.as_tensor(np.array([self.state]), dtype=torch.float32).to(device)
+            q_vals_t = net(states_t)
             _, act_t = torch.max(q_vals_t, dim=1)
             action = int(act_t.item())
 
@@ -100,10 +100,10 @@ class Agent:
         states, actions, rewards, terminated, truncated, new_states = batch
 
         states_t = torch.as_tensor(states).to(device)
-        next_states_t = torch.as_tensor(states).to(device)
-        actions_t = torch.as_tensor(states).to(device)
-        rewards_t = torch.as_tensor(states).to(device)
-        done_finished = torch.BoolTensor(states).to(device)
+        next_states_t = torch.as_tensor(new_states).to(device)
+        actions_t = torch.as_tensor(actions).to(device)
+        rewards_t = torch.as_tensor(rewards, dtype=torch.float32).to(device)
+        done_finished = torch.BoolTensor(terminated).to(device)
 
         state_action_values = net(states_t).gather(1, actions_t.unsqueeze(-1)).squeeze(-1)
 
@@ -137,6 +137,7 @@ if __name__ == '__main__':
     frame_idx = 0
 
     while True:
+        frame_idx += 1
         epsilon = max(EPSILON_END, EPSILON_START - frame_idx / EPSILON_DECAY_LAST_FRAME)
 
         reward = agent.play_step(net, epsilon, device=DEVICE)
@@ -150,7 +151,7 @@ if __name__ == '__main__':
             writer.add_scalar('reward', reward, frame_idx)
 
             if best_m_reward is None or best_m_reward < m_reward:
-                torch.save(net.state_dict(), ENV_NAME + 'best_%.0f.dat' % m_reward)
+                torch.save(net.state_dict(), './model_saves/' + ENV_NAME + 'best_%.0f.dat' % m_reward)
                 if best_m_reward is not None:
                     print(f'Best reward updated! %.3f -> %.3f' % (best_m_reward, m_reward))
                 best_m_reward = m_reward
