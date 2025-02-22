@@ -26,8 +26,6 @@ EPSILON_START = 1
 EPSILON_END = 0.01
 
 
-
-
 Experience = collections.namedtuple('Experience',
                                     field_names=['state', 'action', 'reward', 'terminated', 'truncated', 'new_state'])
 
