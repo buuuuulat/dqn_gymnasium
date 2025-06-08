@@ -1,6 +1,6 @@
 # DQN Agent for Acrobot-v1
 
-Deep Q-Network (DQN) implementation to solve the Acrobot-v1 environment from Gymnasium.
+Deep Q-Network (DQN) implementation on PyTorch from scratch to solve the classic environments from Gymnasium.
 
 ## Requirements
 - Python 3.8+
